@@ -2,15 +2,15 @@
 
 import React, { useEffect, useState } from 'react';
 import TaskCard from '../../components/TaskCard';
-import TaskForm from '../../components/TaskForm';
 import { useTaskStore } from '@/store/taskStore';
+import Link from 'next/link';
+import TaskForm from '@/components/TaskForm';
 
 const TasksPage = () => {
   const {
     tasks,
     setTasks,
     addTask,
-    deleteTask,
     filteredStatus,
     searchQuery,
     setFilteredStatus,
@@ -18,51 +18,13 @@ const TasksPage = () => {
   } = useTaskStore();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [editingTask, setEditingTask] = useState<any>(null);
 
-  
   useEffect(() => {
     const saved = localStorage.getItem('tasks');
     if (saved) {
       setTasks(JSON.parse(saved));
     }
   }, []);
-
- 
-  useEffect(() => {
-    localStorage.setItem('tasks', JSON.stringify(tasks));
-  }, [tasks]);
-
-  const handleAddTask = (
-    title: string,
-    description: string,
-    status: string,
-    priority: string,
-    dueDate: string,
-    taskId?: number
-  ) => {
-    if (taskId) {
-      const updated = tasks.map((task) =>
-        task.id === taskId
-          ? { ...task, title, description, status, priority, dueDate }
-          : task
-      );
-      setTasks(updated);
-    } else {
-      const newTask = {
-        id: tasks.length > 0 ? Math.max(...tasks.map((t) => t.id)) + 1 : 1,
-        title,
-        description,
-        status,
-        priority,
-        dueDate,
-      };
-      addTask(newTask);
-    }
-
-    setIsModalOpen(false);
-    setEditingTask(null);
-  };
 
   const filteredTasks = tasks.filter((task) => {
     const matchesStatus =
@@ -72,6 +34,25 @@ const TasksPage = () => {
       task.description.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesStatus && matchesSearch;
   });
+
+  const handleAddTask = (
+    title: string,
+    description: string,
+    status: string,
+    priority: string,
+    dueDate: string
+  ) => {
+    const newTask = {
+      id: tasks.length > 0 ? Math.max(...tasks.map((t) => t.id)) + 1 : 1,
+      title,
+      description,
+      status,
+      priority,
+      dueDate,
+    };
+    addTask(newTask);
+    setIsModalOpen(false);
+  };
 
   return (
     <div className="p-8">
@@ -106,12 +87,9 @@ const TasksPage = () => {
       </div>
 
      
-      <div className="my-8">
+      <div className="my-6 text-right">
         <button
-          onClick={() => {
-            setIsModalOpen(true);
-            setEditingTask(null);
-          }}
+          onClick={() => setIsModalOpen(true)}
           className="text-black px-6 py-3 rounded-lg font-semibold transition hover:brightness-90"
           style={{ backgroundColor: '#FFC72C' }}
         >
@@ -119,32 +97,27 @@ const TasksPage = () => {
         </button>
       </div>
 
-     
       <div className="mt-8 grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
         {filteredTasks.map((task) => (
-          <TaskCard
-            key={task.id}
-            id={task.id}
-            title={task.title}
-            description={task.description}
-            status={task.status}
-            priority={task.priority}
-            dueDate={task.dueDate}
-            onEdit={() => {
-              setEditingTask(task);
-              setIsModalOpen(true);
-            }}
-            onDelete={() => deleteTask(task.id)}
-          />
+          <Link key={task.id} href={`/tasks/${task.id}`} className="block">
+            <TaskCard
+              id={task.id}
+              title={task.title}
+              description={task.description}
+              status={task.status}
+              priority={task.priority}
+              dueDate={task.dueDate}
+              onEdit={() => {}}
+              onDelete={() => {}}
+            />
+          </Link>
         ))}
       </div>
 
-     
       {isModalOpen && (
         <TaskForm
           onAddTask={handleAddTask}
-          initialData={editingTask}
-          isEditMode={!!editingTask}
+          isEditMode={false}
           isModalOpen={isModalOpen}
           setIsModalOpen={setIsModalOpen}
         />
@@ -154,4 +127,3 @@ const TasksPage = () => {
 };
 
 export default TasksPage;
-
