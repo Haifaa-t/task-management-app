@@ -1,80 +1,101 @@
 'use client';
 
 import { useParams, useRouter } from 'next/navigation';
-import React, { useEffect, useState } from 'react';
-import TaskForm from '@/components/TaskForm'; // Adjust path as needed
+import { useEffect, useState } from 'react';
+import { useTaskStore } from '@/store/taskStore';
+import TaskForm from '@/components/TaskForm';
+import Link from 'next/link';
 
 const TaskDetailsPage = () => {
   const { id } = useParams();
   const router = useRouter();
+  const {
+    tasks,
+    deleteTask,
+    setTasks,
+    addTask,
+  } = useTaskStore();
+
   const [task, setTask] = useState<any>(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
   useEffect(() => {
-    const tasks = JSON.parse(localStorage.getItem('tasks') || '[]');
-    const found = tasks.find((t: any) => t.id === parseInt(id as string));
+    const taskId = Number(id);
+    const found = tasks.find((t) => t.id === taskId);
     setTask(found);
-  }, [id]);
+  }, [id, tasks]);
 
   const handleDelete = () => {
-    const tasks = JSON.parse(localStorage.getItem('tasks') || '[]');
-    const updated = tasks.filter((t: any) => t.id !== parseInt(id as string));
-    localStorage.setItem('tasks', JSON.stringify(updated));
-    router.push('/tasks');
+    const confirmed = confirm('Are you sure you want to delete this task?');
+    if (confirmed) {
+      deleteTask(task.id);
+      router.push('/tasks');
+    }
   };
 
-  const handleEdit = (title: string, description: string, status: string, priority: string, dueDate: string) => {
-    const tasks = JSON.parse(localStorage.getItem('tasks') || '[]');
-    const updated = tasks.map((t: any) =>
-      t.id === parseInt(id as string)
+  const handleEdit = (
+    title: string,
+    description: string,
+    status: string,
+    priority: string,
+    dueDate: string,
+    taskId?: number
+  ) => {
+    const updated = tasks.map((t) =>
+      t.id === taskId
         ? { ...t, title, description, status, priority, dueDate }
         : t
     );
-    localStorage.setItem('tasks', JSON.stringify(updated));
-    setTask({ id: parseInt(id as string), title, description, status, priority, dueDate });
+    setTasks(updated);
     setIsModalOpen(false);
   };
 
-  if (!task) return <div className="p-8">Loading...</div>;
+  if (!task) {
+    return <div className="p-8 text-center text-gray-600">Task not found</div>;
+  }
 
   return (
-    <div className="p-8">
-      <h1 className="text-3xl font-bold">{task.title}</h1>
-      <p className="mt-4">{task.description}</p>
-      <p className="mt-2 text-sm text-gray-600">Status: {task.status}</p>
-      <p className="mt-2 text-sm text-gray-600">Priority: {task.priority}</p>
-      <p className="mt-2 text-sm text-gray-600">Due Date: {task.dueDate}</p>
+    <div className="p-8 max-w-xl mx-auto bg-white rounded-xl shadow-md">
+      <h1 className="text-2xl font-bold text-red-600 mb-2">{task.title}</h1>
+      <p className="text-gray-700 mb-4">{task.description}</p>
+      <div className="text-sm text-gray-500 space-y-1">
+        <p>Status: {task.status}</p>
+        <p>Priority: {task.priority}</p>
+        <p>Due Date: {task.dueDate}</p>
+      </div>
 
-      <div className="flex gap-4 mt-6">
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className="bg-yellow-500 text-white px-4 py-2 rounded"
-        >
-          Edit Task
-        </button>
-        <button
-          onClick={handleDelete}
-          className="bg-red-600 text-white px-4 py-2 rounded"
-        >
-          Delete Task
-        </button>
-        <button
-          onClick={() => router.push('/tasks')}
-          className="bg-blue-600 text-white px-4 py-2 rounded"
-        >
-          Back to Tasks
-        </button>
+      <div className="flex justify-between items-center mt-6">
+        {/* Back Button */}
+        <Link href="/tasks">
+          <button className="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded text-sm font-medium">
+            ← Back to Tasks
+          </button>
+        </Link>
+
+        {/* Edit/Delete */}
+        <div className="flex gap-2">
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="px-4 py-2 rounded bg-yellow-400 text-black hover:brightness-95"
+          >
+            Edit
+          </button>
+          <button
+            onClick={handleDelete}
+            className="px-4 py-2 rounded bg-red-600 text-white hover:bg-red-700"
+          >
+            Delete
+          </button>
+        </div>
       </div>
 
       {isModalOpen && (
         <TaskForm
+          onAddTask={handleEdit}
           initialData={task}
           isEditMode={true}
           isModalOpen={isModalOpen}
           setIsModalOpen={setIsModalOpen}
-          onAddTask={(title, description, status, priority, dueDate) =>
-            handleEdit(title, description, status, priority, dueDate)
-          }
         />
       )}
     </div>
@@ -82,5 +103,6 @@ const TaskDetailsPage = () => {
 };
 
 export default TaskDetailsPage;
+
 
 
