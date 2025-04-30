@@ -65,14 +65,14 @@ const TaskDetailsPage = () => {
       </div>
 
       <div className="flex justify-between items-center mt-6">
-        {/* Back Button */}
+  
         <Link href="/tasks">
           <button className="px-4 py-2 bg-gray-200 hover:bg-gray-300 rounded text-sm font-medium">
             ← Back to Tasks
           </button>
         </Link>
 
-        {/* Edit/Delete */}
+       
         <div className="flex gap-2">
           <button
             onClick={() => setIsModalOpen(true)}
