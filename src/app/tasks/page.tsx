@@ -1,54 +1,74 @@
-// src/app/tasks/page.tsx
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import TaskCard from '../../components/TaskCard';
 import TaskForm from '../../components/TaskForm';
+import { useTaskStore } from '@/store/taskStore';
 
 const TasksPage = () => {
-  const loadTasks = () => {
-    const savedTasks = localStorage.getItem('tasks');
-    return savedTasks ? JSON.parse(savedTasks) : [];  
-  };
+  const {
+    tasks,
+    setTasks,
+    addTask,
+    deleteTask,
+    filteredStatus,
+    searchQuery,
+    setFilteredStatus,
+    setSearchQuery,
+  } = useTaskStore();
 
-  const [tasks, setTasks] = useState<any[]>(loadTasks());
-  const [filteredStatus, setFilteredStatus] = useState('All');
-  const [searchQuery, setSearchQuery] = useState('');
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [editingTask, setEditingTask] = useState<any>(null);
 
+  
+  useEffect(() => {
+    const saved = localStorage.getItem('tasks');
+    if (saved) {
+      setTasks(JSON.parse(saved));
+    }
+  }, []);
+
+ 
   useEffect(() => {
     localStorage.setItem('tasks', JSON.stringify(tasks));
   }, [tasks]);
 
-  const handleAddTask = (title: string, description: string, status: string, priority: string, dueDate: string, taskId?: number) => {
+  const handleAddTask = (
+    title: string,
+    description: string,
+    status: string,
+    priority: string,
+    dueDate: string,
+    taskId?: number
+  ) => {
     if (taskId) {
-      const updatedTasks = tasks.map((task) =>
-        task.id === taskId ? { ...task, title, description, status, priority, dueDate } : task
+      const updated = tasks.map((task) =>
+        task.id === taskId
+          ? { ...task, title, description, status, priority, dueDate }
+          : task
       );
-      setTasks(updatedTasks);
+      setTasks(updated);
     } else {
       const newTask = {
-        id: tasks.length > 0 ? Math.max(...tasks.map(task => task.id)) + 1 : 1,
+        id: tasks.length > 0 ? Math.max(...tasks.map((t) => t.id)) + 1 : 1,
         title,
         description,
         status,
         priority,
         dueDate,
       };
-      setTasks([...tasks, newTask]);
+      addTask(newTask);
     }
+
     setIsModalOpen(false);
     setEditingTask(null);
   };
 
-  const handleFilterChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-    setFilteredStatus(e.target.value);
-  };
-
-  const filteredTasks = tasks.filter(task => {
-    const matchesStatus = filteredStatus === 'All' || task.status === filteredStatus;
-    const matchesSearch = task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+  const filteredTasks = tasks.filter((task) => {
+    const matchesStatus =
+      filteredStatus === 'All' || task.status === filteredStatus;
+    const matchesSearch =
+      task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       task.description.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesStatus && matchesSearch;
   });
@@ -57,13 +77,13 @@ const TasksPage = () => {
     <div className="p-8">
       <h1 className="text-3xl font-bold text-center">Task List</h1>
 
-      {/* Filter and Search */}
+     
       <div className="my-4 flex flex-col sm:flex-row justify-between items-center gap-4">
         <div className="flex items-center">
           <label className="mr-2">Filter by Status:</label>
           <select
             value={filteredStatus}
-            onChange={handleFilterChange}
+            onChange={(e) => setFilteredStatus(e.target.value)}
             className="p-2 border rounded-md"
           >
             <option value="All">All</option>
@@ -85,7 +105,7 @@ const TasksPage = () => {
         </div>
       </div>
 
-      {/* Add New Task Button */}
+     
       <div className="my-8">
         <button
           onClick={() => {
@@ -99,7 +119,7 @@ const TasksPage = () => {
         </button>
       </div>
 
-      {/* Task Cards */}
+     
       <div className="mt-8 grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
         {filteredTasks.map((task) => (
           <TaskCard
@@ -114,12 +134,12 @@ const TasksPage = () => {
               setEditingTask(task);
               setIsModalOpen(true);
             }}
-            onDelete={() => setTasks(tasks.filter((t) => t.id !== task.id))}
+            onDelete={() => deleteTask(task.id)}
           />
         ))}
       </div>
 
-      {/* Task Form Modal */}
+     
       {isModalOpen && (
         <TaskForm
           onAddTask={handleAddTask}
@@ -134,3 +154,4 @@ const TasksPage = () => {
 };
 
 export default TasksPage;
+
