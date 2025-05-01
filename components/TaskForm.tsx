@@ -22,7 +22,6 @@ type TaskFormProps = {
   ) => void;
   initialData?: Task | null;
   isEditMode: boolean;
-  isModalOpen: boolean;
   setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
@@ -30,7 +29,6 @@ const TaskForm: React.FC<TaskFormProps> = ({
   onAddTask,
   initialData,
   isEditMode,
-  isModalOpen,
   setIsModalOpen,
 }) => {
   const [title, setTitle] = useState('');
@@ -124,8 +122,6 @@ const TaskForm: React.FC<TaskFormProps> = ({
 };
 
 export default TaskForm;
-
-
 
 
 
