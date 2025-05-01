@@ -22,7 +22,6 @@ type TaskFormProps = {
   ) => void;
   initialData?: Task | null;
   isEditMode: boolean;
-  isModalOpen?: boolean;
   setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
@@ -54,11 +53,13 @@ const TaskForm: React.FC<TaskFormProps> = ({
   };
 
   return (
-   <div className="fixed inset-0 bg-white bg-opacity-70 backdrop-blur-sm z-50">
-      <div className="bg-white p-6 rounded-lg w-full max-w-md shadow-lg">
-        <h2 className="text-xl font-bold mb-4">
-          {isEditMode ? 'Edit Task' : 'Add Task'}
-        </h2>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/70 backdrop-blur-sm">
+    <div className="bg-white p-6 rounded-lg w-full max-w-md shadow-lg">
+      <h2 className="text-xl font-bold mb-4">
+        {isEditMode ? 'Edit Task' : 'Add Task'}
+      </h2>
+     
+  
         <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           <input
             type="text"
@@ -123,6 +124,8 @@ const TaskForm: React.FC<TaskFormProps> = ({
 };
 
 export default TaskForm;
+
+
 
 
 
