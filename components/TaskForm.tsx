@@ -54,7 +54,7 @@ const TaskForm: React.FC<TaskFormProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-40 z-50">
+   <div className="fixed inset-0 bg-white bg-opacity-70 backdrop-blur-sm z-50">
       <div className="bg-white p-6 rounded-lg w-full max-w-md shadow-lg">
         <h2 className="text-xl font-bold mb-4">
           {isEditMode ? 'Edit Task' : 'Add Task'}
