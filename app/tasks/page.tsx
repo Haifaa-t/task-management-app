@@ -1,3 +1,4 @@
+
 'use client';
 
 import React, { useEffect, useState } from 'react';
@@ -19,15 +20,15 @@ const TasksPage = () => {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
- 
+  // تحميل المهام من localStorage عند أول تشغيل
   useEffect(() => {
     const saved = localStorage.getItem('tasks');
     if (saved) {
       setTasks(JSON.parse(saved));
     }
-  }, []);
+  }, [setTasks]); // ✅ تعديل: إضافة setTasks لتجاوز تحذير ESLint
 
- 
+  // حفظ المهام في localStorage عند أي تعديل
   useEffect(() => {
     localStorage.setItem('tasks', JSON.stringify(tasks));
   }, [tasks]);
@@ -64,7 +65,7 @@ const TasksPage = () => {
     <div className="p-8">
       <h1 className="text-3xl font-bold text-center">Task List</h1>
 
-   
+      {/* Filter + Search */}
       <div className="my-4 flex flex-col sm:flex-row justify-between items-center gap-4">
         <div className="flex items-center">
           <label className="mr-2">Filter by Status:</label>
@@ -92,7 +93,7 @@ const TasksPage = () => {
         </div>
       </div>
 
-   
+      {/* Add Button */}
       <div className="my-6 text-right">
         <button
           onClick={() => setIsModalOpen(true)}
@@ -103,7 +104,7 @@ const TasksPage = () => {
         </button>
       </div>
 
- 
+      {/* Task List */}
       <div className="mt-8 grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
         {filteredTasks.map((task) => (
           <Link key={task.id} href={`/tasks/${task.id}`} className="block">
@@ -121,6 +122,7 @@ const TasksPage = () => {
         ))}
       </div>
 
+      {/* Modal */}
       {isModalOpen && (
         <TaskForm
           onAddTask={handleAddTask}
@@ -134,4 +136,5 @@ const TasksPage = () => {
 };
 
 export default TasksPage;
+
 
