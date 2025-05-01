@@ -50,7 +50,7 @@ const TasksPage = () => {
     <div className="p-8">
       <h1 className="text-3xl font-bold text-center">Task List</h1>
 
-    
+ 
       <div className="my-4 flex flex-col sm:flex-row justify-between items-center gap-4">
         <div className="flex items-center">
           <label className="mr-2">Filter by Status:</label>
@@ -78,7 +78,7 @@ const TasksPage = () => {
         </div>
       </div>
 
-   
+    
       <div className="my-6 text-right">
         <button
           onClick={() => setIsModalOpen(true)}
@@ -99,8 +99,7 @@ const TasksPage = () => {
               status={task.status}
               priority={task.priority}
               dueDate={task.dueDate}
-              onEdit={() => {}}
-              onDelete={() => {}}
+              
             />
           </Link>
         ))}
@@ -119,5 +118,4 @@ const TasksPage = () => {
 };
 
 export default TasksPage;
-
 
