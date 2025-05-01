@@ -1,7 +1,7 @@
 'use client';
 
-import Link from 'next/link';
 import React from 'react';
+import Link from 'next/link';
 
 type Props = {
   id: number;
@@ -29,16 +29,17 @@ const TaskCard: React.FC<Props> = ({
         <p>Priority: {priority}</p>
         <p>Due: {dueDate}</p>
       </div>
-
-     
       <div className="flex justify-end mt-4">
         <Link href={`/tasks/${id}`}>
-          <button className="px-4 py-2 rounded bg-yellow-400 hover:bg-yellow-300 text-black font-semibold">
-            View Task
+          <button className="px-4 py-2 rounded bg-gray-300 hover:bg-gray-400 text-black font-semibold">
+            View Details
           </button>
         </Link>
       </div>
     </div>
   );
 };
+
+export default TaskCard;
+
 
