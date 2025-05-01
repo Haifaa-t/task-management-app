@@ -15,7 +15,7 @@ const TaskDetailPage = () => {
 
   const handleDelete = () => {
     deleteTask(task.id);
-    router.push('/tasks'); // رجوع للصفحة الرئيسية بعد الحذف
+    router.push('/tasks'); 
   };
 
   return (
