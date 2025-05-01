@@ -1,4 +1,5 @@
 
+
 import Link from 'next/link';
 import '../styles/globals.css';
 
@@ -42,5 +43,4 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
 };
 
 export default Layout;
-
 
