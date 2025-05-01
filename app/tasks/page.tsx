@@ -1,59 +1,123 @@
 'use client';
 
-import { useParams, useRouter } from 'next/navigation';
-import { useTaskStore } from '@/store/taskStore';
-import React from 'react';
+import React, { useState } from 'react';
+import TaskCard from '../../components/TaskCard';
+import { useTaskStore } from '../../store/taskStore';
+import Link from 'next/link';
+import TaskForm from '../../components/TaskForm';
 
-const TaskDetailPage = () => {
-  const { id } = useParams();
-  const router = useRouter();
-  const taskId = Number(id);
-  const { tasks, deleteTask } = useTaskStore();
-  const task = tasks.find((t) => t.id === taskId);
+const TasksPage = () => {
+  const {
+    tasks,
+    addTask,
+    filteredStatus,
+    searchQuery,
+    setFilteredStatus,
+    setSearchQuery,
+  } = useTaskStore();
 
-  if (!task) return <div className="p-6 text-center">Task not found</div>;
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const handleDelete = () => {
-    deleteTask(task.id);
-    router.push('/tasks');
+  const filteredTasks = tasks.filter((task) => {
+    const matchesStatus =
+      filteredStatus === 'All' || task.status === filteredStatus;
+    const matchesSearch =
+      task.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      task.description.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesStatus && matchesSearch;
+  });
+
+  const handleAddTask = (
+    title: string,
+    description: string,
+    status: string,
+    priority: string,
+    dueDate: string
+  ) => {
+    const newTask = {
+      id: tasks.length > 0 ? Math.max(...tasks.map((t) => t.id)) + 1 : 1,
+      title,
+      description,
+      status,
+      priority,
+      dueDate,
+    };
+    addTask(newTask);
+    setIsModalOpen(false);
   };
 
   return (
-    <div className="p-6 max-w-xl mx-auto bg-white rounded-lg shadow-md">
-      <h1 className="text-2xl font-bold mb-4 text-red-600">{task.title}</h1>
-      <p className="mb-2 text-gray-700">{task.description}</p>
-      <div className="text-sm text-gray-600 mb-4">
-        <p>Status: {task.status}</p>
-        <p>Priority: {task.priority}</p>
-        <p>Due Date: {task.dueDate}</p>
+    <div className="p-8">
+      <h1 className="text-3xl font-bold text-center">Task List</h1>
+
+    
+      <div className="my-4 flex flex-col sm:flex-row justify-between items-center gap-4">
+        <div className="flex items-center">
+          <label className="mr-2">Filter by Status:</label>
+          <select
+            value={filteredStatus}
+            onChange={(e) => setFilteredStatus(e.target.value)}
+            className="p-2 border rounded-md"
+          >
+            <option value="All">All</option>
+            <option value="Pending">Pending</option>
+            <option value="In Progress">In Progress</option>
+            <option value="Completed">Completed</option>
+          </select>
+        </div>
+
+        <div className="flex items-center">
+          <label className="mr-2">Search Tasks:</label>
+          <input
+            type="text"
+            placeholder="Search by title or description"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="p-2 border rounded-md"
+          />
+        </div>
       </div>
 
-      <div className="flex justify-end gap-4">
+   
+      <div className="my-6 text-right">
         <button
-          onClick={() => router.push(`/tasks/${task.id}/edit`)}
-          className="px-4 py-2 rounded bg-yellow-400 hover:bg-yellow-300 text-black font-semibold"
+          onClick={() => setIsModalOpen(true)}
+          className="text-black px-6 py-3 rounded-lg font-semibold transition hover:brightness-90"
+          style={{ backgroundColor: '#FFC72C' }}
         >
-          Edit
-        </button>
-        <button
-          onClick={handleDelete}
-          className="px-4 py-2 rounded bg-red-600 hover:bg-red-700 text-white font-semibold"
-        >
-          Delete
+          Add New Task
         </button>
       </div>
 
-      <button
-        onClick={() => router.push('/tasks')}
-        className="mt-6 px-4 py-2 rounded bg-[#F2F2F2] text-[#555] font-medium hover:bg-[#e0e0e0] transition"
-      >
-        ← Back to Tasks
-      </button>
+      <div className="mt-8 grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
+        {filteredTasks.map((task) => (
+          <Link key={task.id} href={`/tasks/${task.id}`} className="block">
+            <TaskCard
+              id={task.id}
+              title={task.title}
+              description={task.description}
+              status={task.status}
+              priority={task.priority}
+              dueDate={task.dueDate}
+              onEdit={() => {}}
+              onDelete={() => {}}
+            />
+          </Link>
+        ))}
+      </div>
+
+      {isModalOpen && (
+        <TaskForm
+          onAddTask={handleAddTask}
+          isEditMode={false}
+          isModalOpen={isModalOpen}
+          setIsModalOpen={setIsModalOpen}
+        />
+      )}
     </div>
   );
 };
 
-export default TaskDetailPage;
-
+export default TasksPage;
 
 
