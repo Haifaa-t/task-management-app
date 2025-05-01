@@ -19,13 +19,5 @@
   }
 }
 
-body {
-  background-image: url('/tamkeen-logo.png');
-  background-repeat: repeat;
-  background-size: 80px;
-  background-position: center;
-  background-Attachment: "fixed";
-  opacity: 10;
-}
 
 
