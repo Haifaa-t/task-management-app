@@ -1,10 +1,12 @@
 'use client';
 
 import React, { useState } from 'react';
-import TaskCard from '../../components/TaskCard';
-import { useTaskStore } from '../../store/taskStore';
 import Link from 'next/link';
+import TaskCard from '../../components/TaskCard';
 import TaskForm from '../../components/TaskForm';
+import { useTaskStore } from '../../store/taskStore';
+import PageTitle from '../../components/PageTitle';
+import Button from '../../components/Button';
 
 const TasksPage = () => {
   const {
@@ -32,7 +34,8 @@ const TasksPage = () => {
     description: string,
     status: string,
     priority: string,
-    dueDate: string
+    dueDate: string,
+    taskId?: number
   ) => {
     const newTask = {
       id: tasks.length > 0 ? Math.max(...tasks.map((t) => t.id)) + 1 : 1,
@@ -48,9 +51,9 @@ const TasksPage = () => {
 
   return (
     <div className="p-8">
-      <h1 className="text-3xl font-bold text-center">Task List</h1>
+      <PageTitle>Task List</PageTitle>
 
-      {/* Filter + Search */}
+      
       <div className="my-4 flex flex-col sm:flex-row justify-between items-center gap-4">
         <div className="flex items-center">
           <label className="mr-2">Filter by Status:</label>
@@ -78,18 +81,12 @@ const TasksPage = () => {
         </div>
       </div>
 
-      {/* Add Button */}
+      
       <div className="my-6 text-right">
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className="text-black px-6 py-3 rounded-lg font-semibold transition hover:brightness-90"
-          style={{ backgroundColor: '#FFC72C' }}
-        >
-          Add New Task
-        </button>
+        <Button onClick={() => setIsModalOpen(true)}>Add New Task</Button>
       </div>
 
-      {/* Task List */}
+     
       <div className="mt-8 grid gap-8 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3">
         {filteredTasks.map((task) => (
           <Link key={task.id} href={`/tasks/${task.id}`} className="block">
@@ -100,13 +97,12 @@ const TasksPage = () => {
               status={task.status}
               priority={task.priority}
               dueDate={task.dueDate}
-              
             />
           </Link>
         ))}
       </div>
 
-      {/* Modal */}
+      
       {isModalOpen && (
         <TaskForm
           onAddTask={handleAddTask}
@@ -117,6 +113,10 @@ const TasksPage = () => {
       )}
     </div>
   );
+};
+
+export default TasksPage;
+
 };
 
 export default TasksPage;
