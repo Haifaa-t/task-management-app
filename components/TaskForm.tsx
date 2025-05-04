@@ -22,6 +22,7 @@ type TaskFormProps = {
   ) => void;
   initialData?: Task | null;
   isEditMode: boolean;
+  isModalOpen: boolean;
   setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
