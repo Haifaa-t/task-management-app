@@ -23,7 +23,7 @@ const Layout = ({ children }: { children: React.ReactNode }) => {
        
         <div className="relative z-10 min-h-screen">
         
-          <nav className="p-4 text-white" style={{ backgroundColor: '#C8102E' }}>
+          <nav className="p-4 text-white bg-[#C8102E]">
             <ul className="flex gap-4">
               <li>
                 <Link href="/" className="hover:text-gray-300">Home</Link>
