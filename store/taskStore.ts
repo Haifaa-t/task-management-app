@@ -1,6 +1,7 @@
 import { create } from 'zustand';
+import { persist } from 'zustand/middleware';
 
-export type Task = {
+type Task = {
   id: number;
   title: string;
   description: string;
@@ -11,37 +12,32 @@ export type Task = {
 
 type TaskStore = {
   tasks: Task[];
-  filteredStatus: string;
-  searchQuery: string;
   setTasks: (tasks: Task[]) => void;
   addTask: (task: Task) => void;
   deleteTask: (id: number) => void;
+  filteredStatus: string;
   setFilteredStatus: (status: string) => void;
+  searchQuery: string;
   setSearchQuery: (query: string) => void;
 };
 
-export const useTaskStore = create<TaskStore>((set, get) => ({
-  tasks: [],
-  filteredStatus: 'All',
-  searchQuery: '',
-
-  setTasks: (tasks) => {
-    localStorage.setItem('tasks', JSON.stringify(tasks));
-    set({ tasks });
-  },
-
-  addTask: (task) => {
-    const updatedTasks = [...get().tasks, task];
-    localStorage.setItem('tasks', JSON.stringify(updatedTasks));
-    set({ tasks: updatedTasks });
-  },
-
-  deleteTask: (id) => {
-    const updatedTasks = get().tasks.filter((t) => t.id !== id);
-    localStorage.setItem('tasks', JSON.stringify(updatedTasks));
-    set({ tasks: updatedTasks });
-  },
-
-  setFilteredStatus: (status) => set({ filteredStatus: status }),
-  setSearchQuery: (query) => set({ searchQuery: query }),
-}));
+export const useTaskStore = create<TaskStore>()(
+  persist(
+    (set) => ({
+      tasks: [],
+      setTasks: (tasks) => set({ tasks }),
+      addTask: (task) => set((state) => ({ tasks: [...state.tasks, task] })),
+      deleteTask: (id) =>
+        set((state) => ({
+          tasks: state.tasks.filter((task) => task.id !== id),
+        })),
+      filteredStatus: 'All',
+      setFilteredStatus: (status) => set({ filteredStatus: status }),
+      searchQuery: '',
+      setSearchQuery: (query) => set({ searchQuery: query }),
+    }),
+    {
+      name: 'task-storage', 
+    }
+  )
+);
