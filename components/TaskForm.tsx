@@ -1,6 +1,23 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import { Dialog, Transition } from '@headlessui/react';
+import { Fragment } from 'react';
+import { useForm } from 'react-hook-form';
+import { z } from 'zod';
+import { zodResolver } from '@hookform/resolvers/zod';
+import PageTitle from './PageTitle';
+import Button from './Button';
+import Input from './Input';
+
+const schema = z.object({
+  title: z.string().min(1, 'Title is required'),
+  description: z.string().min(1, 'Description is required'),
+  status: z.string(),
+  priority: z.string(),
+  dueDate: z.string().min(1, 'Due date is required'),
+});
+
+type FormData = z.infer<typeof schema>;
 
 type Task = {
   id?: number;
@@ -11,7 +28,7 @@ type Task = {
   dueDate: string;
 };
 
-type TaskFormProps = {
+type Props = {
   onAddTask: (
     title: string,
     description: string,
@@ -26,107 +43,120 @@ type TaskFormProps = {
   setIsModalOpen: React.Dispatch<React.SetStateAction<boolean>>;
 };
 
-const TaskForm: React.FC<TaskFormProps> = ({
+export default function TaskForm({
   onAddTask,
   initialData,
   isEditMode,
+  isModalOpen,
   setIsModalOpen,
-}) => {
-  const [title, setTitle] = useState('');
-  const [description, setDescription] = useState('');
-  const [status, setStatus] = useState('Pending');
-  const [priority, setPriority] = useState('Low');
-  const [dueDate, setDueDate] = useState('');
+}: Props) {
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<FormData>({
+    resolver: zodResolver(schema),
+    defaultValues: initialData || {
+      title: '',
+      description: '',
+      status: 'Pending',
+      priority: 'Low',
+      dueDate: '',
+    },
+  });
 
-  useEffect(() => {
-    if (initialData) {
-      setTitle(initialData.title);
-      setDescription(initialData.description);
-      setStatus(initialData.status);
-      setPriority(initialData.priority);
-      setDueDate(initialData.dueDate);
-    }
-  }, [initialData]);
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    onAddTask(title, description, status, priority, dueDate, initialData?.id);
+  const onSubmit = (data: FormData) => {
+    onAddTask(
+      data.title,
+      data.description,
+      data.status,
+      data.priority,
+      data.dueDate,
+      initialData?.id
+    );
+    setIsModalOpen(false);
+    reset();
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-white/70 backdrop-blur-sm">
-    <div className="bg-white p-6 rounded-lg w-full max-w-md shadow-lg">
-      <h2 className="text-xl font-bold mb-4">
-        {isEditMode ? 'Edit Task' : 'Add Task'}
-      </h2>
-     
-  
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          <input
-            type="text"
-            placeholder="Task Title"
-            value={title}
-            onChange={(e) => setTitle(e.target.value)}
-            required
-            className="p-2 border rounded"
-          />
-          <textarea
-            placeholder="Task Description"
-            value={description}
-            onChange={(e) => setDescription(e.target.value)}
-            required
-            className="p-2 border rounded"
-          />
-          <select
-            value={status}
-            onChange={(e) => setStatus(e.target.value)}
-            className="p-2 border rounded"
-          >
-            <option>Pending</option>
-            <option>In Progress</option>
-            <option>Completed</option>
-          </select>
-          <select
-            value={priority}
-            onChange={(e) => setPriority(e.target.value)}
-            className="p-2 border rounded"
-          >
-            <option>Low</option>
-            <option>Medium</option>
-            <option>High</option>
-          </select>
-          <input
-            type="date"
-            value={dueDate}
-            onChange={(e) => setDueDate(e.target.value)}
-            required
-            className="p-2 border rounded"
-          />
+    <Transition appear show={isModalOpen} as={Fragment}>
+      <Dialog as="div" className="relative z-50" onClose={() => setIsModalOpen(false)}>
+        <Transition.Child
+          as={Fragment}
+          enter="ease-out duration-300"
+          enterFrom="opacity-0"
+          enterTo="opacity-100"
+          leave="ease-in duration-200"
+          leaveFrom="opacity-100"
+          leaveTo="opacity-0"
+        >
+          <div className="fixed inset-0 bg-black bg-opacity-25" />
+        </Transition.Child>
 
-          <div className="flex justify-end gap-4 mt-4">
-            <button
-              type="button"
-              onClick={() => setIsModalOpen(false)}
-              className="bg-gray-200 text-gray-700 px-4 py-2 rounded"
+        <div className="fixed inset-0 overflow-y-auto">
+          <div className="flex min-h-full items-center justify-center p-4 text-center">
+            <Transition.Child
+              as={Fragment}
+              enter="ease-out duration-300"
+              enterFrom="opacity-0 scale-95"
+              enterTo="opacity-100 scale-100"
+              leave="ease-in duration-200"
+              leaveFrom="opacity-100 scale-100"
+              leaveTo="opacity-0 scale-95"
             >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              className="bg-yellow-400 text-black px-4 py-2 rounded font-semibold hover:bg-yellow-300"
-            >
-              {isEditMode ? 'Save Changes' : 'Add Task'}
-            </button>
+              <Dialog.Panel className="w-full max-w-md transform overflow-hidden rounded-2xl bg-white p-6 text-left align-middle shadow-xl transition-all">
+                <PageTitle>{isEditMode ? 'Edit Task' : 'Add Task'}</PageTitle>
+
+                <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 mt-4">
+                  <Input
+                    {...register('title')}
+                    placeholder="Task Title"
+                  />
+                  {errors.title && <p className="text-red-500 text-sm">{errors.title.message}</p>}
+
+                  <textarea
+                    {...register('description')}
+                    placeholder="Task Description"
+                    className="p-2 border rounded"
+                  />
+                  {errors.description && <p className="text-red-500 text-sm">{errors.description.message}</p>}
+
+                  <select {...register('status')} className="p-2 border rounded">
+                    <option>Pending</option>
+                    <option>In Progress</option>
+                    <option>Completed</option>
+                  </select>
+
+                  <select {...register('priority')} className="p-2 border rounded">
+                    <option>Low</option>
+                    <option>Medium</option>
+                    <option>High</option>
+                  </select>
+
+                  <Input
+                    type="date"
+                    {...register('dueDate')}
+                  />
+                  {errors.dueDate && <p className="text-red-500 text-sm">{errors.dueDate.message}</p>}
+
+                  <div className="flex justify-end gap-4 mt-4">
+                    <Button type="button" onClick={() => setIsModalOpen(false)} className="bg-gray-200 text-gray-700 hover:bg-gray-300">
+                      Cancel
+                    </Button>
+                    <Button type="submit">
+                      {isEditMode ? 'Save Changes' : 'Add Task'}
+                    </Button>
+                  </div>
+                </form>
+              </Dialog.Panel>
+            </Transition.Child>
           </div>
-        </form>
-      </div>
-    </div>
+        </div>
+      </Dialog>
+    </Transition>
   );
-};
-
-export default TaskForm;
-
-
+}
 
 
 
