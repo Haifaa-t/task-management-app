@@ -1,8 +1,8 @@
 'use client';
 
-import React from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { useTaskStore } from '@/store/taskStore';
+import React from 'react';
 import PageTitle from '@/components/PageTitle';
 import Button from '@/components/Button';
 
@@ -11,16 +11,9 @@ const TaskDetailPage = () => {
   const router = useRouter();
   const taskId = Number(id);
   const { tasks, deleteTask } = useTaskStore();
-
   const task = tasks.find((t) => t.id === taskId);
 
-  if (!task) {
-    return (
-      <div className="p-6 text-center text-gray-600">
-        Task not found
-      </div>
-    );
-  }
+  if (!task) return <div className="p-6 text-center">Task not found</div>;
 
   const handleDelete = () => {
     deleteTask(task.id);
@@ -31,40 +24,33 @@ const TaskDetailPage = () => {
     <div className="p-6 max-w-xl mx-auto bg-white rounded-lg shadow-md">
       <PageTitle>{task.title}</PageTitle>
 
-      <p className="mb-4 text-gray-700">{task.description}</p>
-
-      <div className="text-sm text-gray-600 mb-6 space-y-1">
-        <p><strong>Status:</strong> {task.status}</p>
-        <p><strong>Priority:</strong> {task.priority}</p>
-        <p><strong>Due Date:</strong> {task.dueDate}</p>
+      <p className="mb-2 text-gray-700">{task.description}</p>
+      <div className="text-sm text-gray-600 mb-4">
+        <p>Status: {task.status}</p>
+        <p>Priority: {task.priority}</p>
+        <p>Due Date: {task.dueDate}</p>
       </div>
 
-      <div className="flex justify-end gap-4 flex-wrap">
-        <Button
-          onClick={() => router.push(`/tasks/${task.id}/edit`)}
-          className="bg-yellow-400 hover:bg-yellow-300 text-black"
-        >
+      <div className="flex justify-end gap-4">
+        <Button onClick={() => router.push(`/tasks/${task.id}/edit`)}>
           Edit
         </Button>
-        <Button
-          onClick={handleDelete}
-          className="bg-red-600 hover:bg-red-700 text-white"
-        >
+        <Button onClick={handleDelete} className="bg-red-600 hover:bg-red-700 text-white">
           Delete
         </Button>
       </div>
 
-      <div className="mt-6">
-        <Button
-          onClick={() => router.push('/tasks')}
-          className="bg-gray-200 text-gray-700 hover:bg-gray-300"
-        >
-          ← Back to Tasks
-        </Button>
-      </div>
+      <Button
+        onClick={() => router.push('/tasks')}
+        className="mt-6 bg-[#F2F2F2] text-[#555] hover:bg-[#e0e0e0]"
+      >
+        ← Back to Tasks
+      </Button>
     </div>
   );
 };
 
 export default TaskDetailPage;
+
+
 
