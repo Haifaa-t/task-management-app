@@ -3,7 +3,8 @@
 import { useParams, useRouter } from 'next/navigation';
 import { useTaskStore } from '@/store/taskStore';
 import React, { useState, useEffect } from 'react';
-
+import PageTitle from '@/components/PageTitle';
+import Button from '@/components/Button';
 
 const EditTaskPage = () => {
   const { id } = useParams();
@@ -43,7 +44,7 @@ const EditTaskPage = () => {
 
   return (
     <div className="p-8 max-w-xl mx-auto bg-white rounded shadow">
-      <h1 className="text-2xl font-bold mb-6 text-red-600">Edit Task</h1>
+      <PageTitle>Edit Task</PageTitle>
 
       <div className="flex flex-col gap-4">
         <input
@@ -86,26 +87,20 @@ const EditTaskPage = () => {
       </div>
 
       <div className="flex justify-end gap-4 mt-6">
-        <button
-          onClick={() => router.push(`/tasks/${taskId}`)}
-          className="bg-gray-300 text-black px-4 py-2 rounded"
-        >
+        <Button onClick={() => router.push(`/tasks/${taskId}`)} className="bg-gray-300 text-black hover:bg-gray-400">
           Cancel
-        </button>
-        <button
-          onClick={handleUpdate}
-          className="bg-yellow-400 text-black px-4 py-2 rounded font-semibold hover:bg-yellow-300"
-        >
+        </Button>
+        <Button onClick={handleUpdate}>
           Save Changes
-        </button>
+        </Button>
       </div>
-    
-
     </div>
   );
 };
 
 export default EditTaskPage;
+
+
 
 
 
