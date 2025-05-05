@@ -1,7 +1,7 @@
-
 'use client';
 
 import Link from 'next/link';
+import Button from '@/components/Button';
 
 export default function Home() {
   return (
@@ -14,19 +14,15 @@ export default function Home() {
           Organize your work and get things done.
         </p>
         <div className="flex justify-center gap-4">
-        <Link href="/tasks">
-  <button
-    className="px-6 py-3 text-white rounded-lg hover:opacity-90 transition"
-    style={{ backgroundColor: '#FFC72C', color: '#000' }} 
-  >
-    View Tasks
-  </button>
-</Link>
-
-        
+          <Link href="/tasks">
+            <Button>
+              View Tasks
+            </Button>
+          </Link>
         </div>
       </div>
     </main>
   );
 }
+
 
