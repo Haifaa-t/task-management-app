@@ -5,9 +5,10 @@ import { Fragment } from 'react';
 import { useForm } from 'react-hook-form';
 import { z } from 'zod';
 import { zodResolver } from '@hookform/resolvers/zod';
-import PageTitle from './PageTitle';
-import Button from './Button';
-import Input from './Input';
+import PageTitle from '@/components/PageTitle';
+import Button from '@/components/Button';
+import Input from '@/components/Input';
+
 
 const schema = z.object({
   title: z.string().min(1, 'Title is required'),
