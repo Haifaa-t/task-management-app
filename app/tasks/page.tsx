@@ -2,11 +2,12 @@
 
 import React, { useState } from 'react';
 import Link from 'next/link';
-import TaskCard from '../../components/TaskCard';
-import TaskForm from '../../components/TaskForm';
-import { useTaskStore } from '../../store/taskStore';
-import PageTitle from '../../components/PageTitle';
-import Button from '../../components/Button';
+import TaskCard from '@/components/TaskCard';
+import TaskForm from '@/components/TaskForm';
+import { useTaskStore } from '@/store/taskStore';
+import PageTitle from '@/components/PageTitle';
+import Button from '@/components/Button';
+
 
 const TasksPage = () => {
   const {
